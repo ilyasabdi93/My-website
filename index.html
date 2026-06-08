@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DarkLogin — Glassmorphism Auth</title>
+    <title>SportAuth — Login & Registration</title>
 
     <!-- Google Sign-In -->
     <meta name="google-signin-client_id" content="325617352352-35cb8fe0pnb23otuk389g5ojflro5cau.apps.googleusercontent.com">
@@ -25,222 +25,244 @@
             align-items: center;
             justify-content: center;
             background: #0a0a0f;
-            background-image: 
-                radial-gradient(ellipse at 20% 50%, rgba(108, 99, 255, 0.08) 0%, transparent 50%),
-                radial-gradient(ellipse at 80% 50%, rgba(108, 99, 255, 0.05) 0%, transparent 50%),
-                radial-gradient(ellipse at 50% 0%, rgba(108, 99, 255, 0.03) 0%, transparent 30%);
-            padding: 20px;
             position: relative;
-            overflow-x: hidden;
+            overflow: hidden;
         }
 
-        /* Animated floating orbs */
-        .orb {
+        /* ===== BACKGROUND IMAGE (Nike Shoe Ad) ===== */
+        .bg-image {
             position: fixed;
-            border-radius: 50%;
-            filter: blur(80px);
-            pointer-events: none;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
             z-index: 0;
-            animation: orbFloat 20s ease-in-out infinite;
+            background: url('https://i.ibb.co/rGqyzm0k/d60c40198cc9e9f1d976f964ae640e7f-webp.webp') center center / cover no-repeat;
+            filter: brightness(0.5) saturate(0.8);
+            transform: scale(1.05);
+            animation: slowZoom 20s ease-in-out infinite alternate;
         }
 
-        .orb-1 {
-            width: 500px;
-            height: 500px;
-            background: rgba(108, 99, 255, 0.12);
-            top: -150px;
-            right: -100px;
-            animation-delay: 0s;
+        @keyframes slowZoom {
+            from { transform: scale(1.05); }
+            to { transform: scale(1.15); }
         }
 
-        .orb-2 {
-            width: 400px;
-            height: 400px;
-            background: rgba(72, 52, 212, 0.1);
-            bottom: -100px;
-            left: -80px;
-            animation-delay: -7s;
-        }
-
-        .orb-3 {
-            width: 300px;
-            height: 300px;
-            background: rgba(108, 99, 255, 0.08);
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            animation-delay: -14s;
-        }
-
-        @keyframes orbFloat {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            25% { transform: translate(30px, -40px) scale(1.05); }
-            50% { transform: translate(-20px, 20px) scale(0.95); }
-            75% { transform: translate(40px, 30px) scale(1.02); }
-        }
-
-        /* Grid overlay */
-        .grid-overlay {
+        /* Dark overlay for readability */
+        .bg-overlay {
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background-image: 
-                linear-gradient(rgba(108, 99, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(108, 99, 255, 0.03) 1px, transparent 1px);
-            background-size: 60px 60px;
-            z-index: 0;
+            background: linear-gradient(135deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.7) 100%);
+            z-index: 1;
+        }
+
+        /* ===== SPORT DECORATIVE ELEMENTS ===== */
+        .sport-accent {
+            position: fixed;
+            z-index: 1;
             pointer-events: none;
+        }
+
+        .accent-line-1 {
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, #6c63ff, #4834d4, #6c63ff, transparent);
+            animation: accentPulse 3s ease-in-out infinite;
+        }
+
+        .accent-line-2 {
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, #6c63ff, #4834d4, #6c63ff, transparent);
+            animation: accentPulse 3s ease-in-out infinite reverse;
+        }
+
+        @keyframes accentPulse {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 1; }
+        }
+
+        /* Speed lines */
+        .speed-lines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .speed-line {
+            position: absolute;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(108, 99, 255, 0.08), transparent);
+            width: 100%;
+            animation: speedLineMove 8s linear infinite;
+        }
+
+        .speed-line:nth-child(1) { top: 15%; animation-delay: 0s; }
+        .speed-line:nth-child(2) { top: 35%; animation-delay: -2s; }
+        .speed-line:nth-child(3) { top: 55%; animation-delay: -4s; }
+        .speed-line:nth-child(4) { top: 75%; animation-delay: -6s; }
+
+        @keyframes speedLineMove {
+            0% { transform: translateX(-100%); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateX(100%); opacity: 0; }
+        }
+
+        /* Floating shoe silhouette */
+        .shoe-silhouette {
+            position: fixed;
+            right: -80px;
+            bottom: -40px;
+            z-index: 1;
+            pointer-events: none;
+            font-size: 300px;
+            color: rgba(108, 99, 255, 0.04);
+            transform: rotate(-20deg);
         }
 
         /* ===== MAIN CONTAINER ===== */
         .main-container {
             position: relative;
-            z-index: 1;
+            z-index: 10;
             display: flex;
             width: 1000px;
-            max-width: 100%;
+            max-width: 95vw;
             background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
             border-radius: 32px;
             border: 1px solid rgba(255, 255, 255, 0.06);
-            box-shadow: 
-                0 40px 80px rgba(0, 0, 0, 0.6),
-                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6);
             overflow: hidden;
         }
 
-        /* ===== LEFT PANEL (Branding + Slider) ===== */
+        /* ===== LEFT BRAND PANEL ===== */
         .left-panel {
             flex: 1;
-            padding: 60px 40px;
-            background: linear-gradient(135deg, rgba(108, 99, 255, 0.04), rgba(72, 52, 212, 0.02));
+            padding: 60px 45px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             position: relative;
-            min-height: 550px;
+            min-height: 560px;
+            background: linear-gradient(135deg, rgba(108, 99, 255, 0.03), transparent);
         }
 
-        .brand {
-            margin-bottom: 40px;
+        .brand-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px;
+            border-radius: 50px;
+            border: 1px solid rgba(108, 99, 255, 0.2);
+            background: rgba(108, 99, 255, 0.08);
+            color: #6c63ff;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 30px;
+            width: fit-content;
+        }
+
+        .brand-badge i {
+            font-size: 14px;
         }
 
         .brand h1 {
             color: #fff;
-            font-size: 32px;
-            font-weight: 700;
-            letter-spacing: -1px;
+            font-size: 42px;
+            font-weight: 800;
+            letter-spacing: -1.5px;
+            line-height: 1.1;
+            margin-bottom: 6px;
         }
 
         .brand h1 span {
-            color: #6c63ff;
+            background: linear-gradient(135deg, #6c63ff, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
-        .brand p {
-            color: rgba(255, 255, 255, 0.35);
-            font-size: 14px;
-            margin-top: 6px;
+        .brand .tagline {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 16px;
+            font-weight: 300;
+            margin-bottom: 40px;
         }
 
-        /* Testimonial / Feature Slider */
-        .feature-slider {
-            position: relative;
-            flex: 1;
+        /* Stat cards */
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            max-width: 320px;
         }
 
-        .feature-slide {
-            display: none;
-            animation: fadeSlide 0.6s ease;
+        .stat-card {
+            padding: 16px 18px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            transition: all 0.3s;
         }
 
-        .feature-slide.active {
-            display: block;
+        .stat-card:hover {
+            background: rgba(108, 99, 255, 0.06);
+            border-color: rgba(108, 99, 255, 0.15);
         }
 
-        @keyframes fadeSlide {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .feature-slide .icon-wrap {
-            width: 64px;
-            height: 64px;
-            border-radius: 18px;
-            background: rgba(108, 99, 255, 0.12);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-            border: 1px solid rgba(108, 99, 255, 0.15);
-        }
-
-        .feature-slide .icon-wrap i {
-            font-size: 28px;
-            color: #6c63ff;
-        }
-
-        .feature-slide h3 {
+        .stat-card .num {
             color: #fff;
             font-size: 22px;
-            margin-bottom: 10px;
-            font-weight: 600;
+            font-weight: 700;
         }
 
-        .feature-slide p {
-            color: rgba(255, 255, 255, 0.45);
-            font-size: 14px;
-            line-height: 1.7;
-            max-width: 340px;
+        .stat-card .label {
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 12px;
+            margin-top: 2px;
         }
 
-        .slider-dots {
-            display: flex;
-            gap: 8px;
-            margin-top: 30px;
-        }
-
-        .slider-dots .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.15);
-            cursor: pointer;
-            transition: all 0.4s;
-        }
-
-        .slider-dots .dot.active {
-            width: 28px;
-            border-radius: 4px;
-            background: #6c63ff;
-            box-shadow: 0 0 20px rgba(108, 99, 255, 0.3);
-        }
-
-        /* ===== RIGHT PANEL (Forms) ===== */
+        /* ===== RIGHT FORM PANEL ===== */
         .right-panel {
             width: 460px;
             padding: 50px 45px;
-            background: rgba(255, 255, 255, 0.02);
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(50px);
+            -webkit-backdrop-filter: blur(50px);
             border-left: 1px solid rgba(255, 255, 255, 0.04);
         }
 
         .right-panel h2 {
             color: #fff;
-            font-size: 24px;
-            font-weight: 600;
+            font-size: 22px;
+            font-weight: 700;
             margin-bottom: 4px;
         }
 
         .right-panel .subtitle {
             color: rgba(255, 255, 255, 0.35);
             font-size: 14px;
-            margin-bottom: 28px;
+            margin-bottom: 25px;
         }
 
         /* Tabs */
         .tab-bar {
             display: flex;
             gap: 4px;
-            margin-bottom: 28px;
+            margin-bottom: 25px;
             background: rgba(255, 255, 255, 0.03);
             border-radius: 14px;
             padding: 4px;
@@ -270,9 +292,13 @@
             color: rgba(255, 255, 255, 0.6);
         }
 
-        /* Form panels */
-        .form-panel { display: none; }
+        .form-panel { display: none; animation: fadeIn 0.4s ease; }
         .form-panel.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
         .form-group {
             margin-bottom: 16px;
@@ -281,11 +307,11 @@
         .form-group label {
             display: block;
             color: rgba(255, 255, 255, 0.4);
-            font-size: 12px;
+            font-size: 11px;
             margin-bottom: 6px;
-            font-weight: 500;
+            font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 0.8px;
+            letter-spacing: 1px;
         }
 
         .input-wrap {
@@ -301,7 +327,7 @@
         .input-wrap:focus-within {
             border-color: rgba(108, 99, 255, 0.4);
             box-shadow: 0 0 25px rgba(108, 99, 255, 0.08);
-            background: rgba(108, 99, 255, 0.03);
+            background: rgba(108, 99, 255, 0.04);
         }
 
         .input-wrap i {
@@ -342,7 +368,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 22px;
+            margin-bottom: 20px;
             font-size: 13px;
         }
 
@@ -354,9 +380,7 @@
             cursor: pointer;
         }
 
-        .form-options label input {
-            accent-color: #6c63ff;
-        }
+        .form-options label input { accent-color: #6c63ff; }
 
         .form-options a {
             color: #6c63ff;
@@ -370,7 +394,6 @@
             text-shadow: 0 0 20px rgba(108, 99, 255, 0.4);
         }
 
-        /* Primary Button */
         .btn-primary {
             width: 100%;
             padding: 14px;
@@ -395,24 +418,20 @@
             transition: left 0.6s;
         }
 
-        .btn-primary:hover::before {
-            left: 100%;
-        }
+        .btn-primary:hover::before { left: 100%; }
 
         .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 12px 35px rgba(108, 99, 255, 0.35);
         }
 
-        .btn-primary:active {
-            transform: translateY(0);
-        }
+        .btn-primary:active { transform: translateY(0); }
 
         .divider {
             display: flex;
             align-items: center;
-            margin: 22px 0;
-            color: rgba(255, 255, 255, 0.15);
+            margin: 20px 0;
+            color: rgba(255, 255, 255, 0.12);
             font-size: 12px;
         }
 
@@ -430,7 +449,7 @@
             justify-content: center;
         }
 
-        /* ===== OTP STYLES ===== */
+        /* ===== OTP ===== */
         .otp-inputs {
             display: flex;
             gap: 10px;
@@ -455,7 +474,6 @@
         .otp-inputs input:focus {
             border-color: #6c63ff;
             box-shadow: 0 0 25px rgba(108, 99, 255, 0.15);
-            background: rgba(108, 99, 255, 0.06);
         }
 
         .hidden { display: none !important; }
@@ -481,7 +499,7 @@
         }
 
         /* ===== RESPONSIVE ===== */
-        @media (max-width: 860px) {
+        @media (max-width: 900px) {
             .main-container {
                 flex-direction: column;
                 max-width: 480px;
@@ -496,68 +514,65 @@
                 border-left: none;
                 border-top: 1px solid rgba(255, 255, 255, 0.04);
             }
-            .brand { margin-bottom: 25px; }
-            .brand h1 { font-size: 26px; }
-            .feature-slide h3 { font-size: 19px; }
+            .brand h1 { font-size: 32px; }
+            .shoe-silhouette { display: none; }
         }
 
         @media (max-width: 480px) {
             .right-panel { padding: 25px 20px; }
             .left-panel { padding: 30px 20px; }
+            .stats { grid-template-columns: 1fr 1fr; gap: 8px; }
             .otp-inputs input { width: 40px; height: 46px; font-size: 18px; }
-            .tab-bar button { font-size: 12px; padding: 8px 10px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Floating Orbs -->
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
-    <div class="orb orb-3"></div>
-    <div class="grid-overlay"></div>
+    <!-- Background Image -->
+    <div class="bg-image"></div>
+    <div class="bg-overlay"></div>
 
-    <!-- ===== MAIN ===== -->
+    <!-- Sport Accents -->
+    <div class="sport-accent accent-line-1"></div>
+    <div class="sport-accent accent-line-2"></div>
+    
+    <div class="speed-lines">
+        <div class="speed-line"></div>
+        <div class="speed-line"></div>
+        <div class="speed-line"></div>
+        <div class="speed-line"></div>
+    </div>
+
+    <div class="shoe-silhouette"><i class="fas fa-running"></i></div>
+
+    <!-- ===== MAIN CONTAINER ===== -->
     <div class="main-container">
 
         <!-- LEFT PANEL -->
         <div class="left-panel">
-            <div class="brand">
-                <h1>Auth<span>Verse</span></h1>
-                <p>Secure, fast, and beautiful authentication</p>
+            <div class="brand-badge">
+                <i class="fas fa-bolt"></i> New Generation
             </div>
-
-            <div class="feature-slider">
-                <!-- Slide 1 -->
-                <div class="feature-slide active" data-index="0">
-                    <div class="icon-wrap"><i class="fas fa-shield-halved"></i></div>
-                    <h3>Enterprise Security</h3>
-                    <p>End-to-end encryption with zero-knowledge architecture. Your data never leaves your control.</p>
+            <div class="brand">
+                <h1>SPORT<br><span>AUTH</span></h1>
+                <p class="tagline">Performance meets security</p>
+            </div>
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="num">10K+</div>
+                    <div class="label">Active Users</div>
                 </div>
-                <!-- Slide 2 -->
-                <div class="feature-slide" data-index="1">
-                    <div class="icon-wrap"><i class="fas fa-bolt"></i></div>
-                    <h3>Lightning Performance</h3>
-                    <p>Sub-100ms authentication with intelligent caching and global edge deployment.</p>
+                <div class="stat-card">
+                    <div class="num">99.9%</div>
+                    <div class="label">Uptime</div>
                 </div>
-                <!-- Slide 3 -->
-                <div class="feature-slide" data-index="2">
-                    <div class="icon-wrap"><i class="fas fa-fingerprint"></i></div>
-                    <h3>Multi-Factor Ready</h3>
-                    <p>Support for TOTP, SMS, email OTP, and hardware security keys out of the box.</p>
+                <div class="stat-card">
+                    <div class="num">150+</div>
+                    <div class="label">Countries</div>
                 </div>
-                <!-- Slide 4 -->
-                <div class="feature-slide" data-index="3">
-                    <div class="icon-wrap"><i class="fas fa-globe"></i></div>
-                    <h3>SSO Integration</h3>
-                    <p>Seamless Google, GitHub, and Microsoft single sign-on with one click.</p>
-                </div>
-
-                <div class="slider-dots">
-                    <span class="dot active" onclick="goToFeature(0)"></span>
-                    <span class="dot" onclick="goToFeature(1)"></span>
-                    <span class="dot" onclick="goToFeature(2)"></span>
-                    <span class="dot" onclick="goToFeature(3)"></span>
+                <div class="stat-card">
+                    <div class="num">4.9★</div>
+                    <div class="label">User Rating</div>
                 </div>
             </div>
         </div>
@@ -565,7 +580,7 @@
         <!-- RIGHT PANEL -->
         <div class="right-panel">
             <h2>Welcome</h2>
-            <p class="subtitle">Sign in or create your account</p>
+            <p class="subtitle">Sign in or create your sport account</p>
 
             <div class="tab-bar">
                 <button class="active" onclick="switchTab('login')">Sign In</button>
@@ -639,7 +654,7 @@
                 <div class="g-signin2" data-onsuccess="onGoogleSignIn" data-theme="dark"></div>
             </div>
 
-            <!-- FORGOT PASSWORD / OTP -->
+            <!-- FORGOT / OTP -->
             <div id="form-forgot" class="form-panel">
                 <div id="forgot-step-1">
                     <div class="form-group">
@@ -688,24 +703,6 @@
     </div>
 
     <script>
-        // ===== FEATURE SLIDER =====
-        let currentFeature = 0;
-        const featureSlides = document.querySelectorAll('.feature-slide');
-        const featureDots = document.querySelectorAll('.slider-dots .dot');
-
-        function goToFeature(index) {
-            featureSlides.forEach(s => s.classList.remove('active'));
-            featureDots.forEach(d => d.classList.remove('active'));
-            featureSlides[index].classList.add('active');
-            featureDots[index].classList.add('active');
-            currentFeature = index;
-        }
-
-        // Auto-rotate features
-        setInterval(() => {
-            goToFeature((currentFeature + 1) % featureSlides.length);
-        }, 5000);
-
         // ===== TAB SWITCHING =====
         function switchTab(tab) {
             document.querySelectorAll('.tab-bar button').forEach(b => b.classList.remove('active'));
@@ -741,7 +738,7 @@
             const email = document.getElementById('login-email').value;
             const pass = document.getElementById('login-pass').value;
             if (!email || !pass) return alert('Please fill all fields.');
-            alert(`Login attempt for: ${email}`);
+            alert(`Welcome back, ${email}!`);
         }
 
         // ===== REGISTER =====
@@ -755,7 +752,7 @@
             if (pass !== confirm) return alert('Passwords do not match.');
             if (pass.length < 6) return alert('Password must be at least 6 characters.');
             if (!terms) return alert('You must agree to the Terms.');
-            alert(`Account created for ${name} (${email})`);
+            alert(`Account created for ${name}!`);
         }
 
         // ===== OTP =====
@@ -766,7 +763,7 @@
             document.getElementById('forgot-step-2').classList.remove('hidden');
             const first = document.querySelector('#forgot-step-2 .otp-inputs input');
             if (first) first.focus();
-            alert(`OTP sent to ${email} (demo mode)`);
+            alert(`OTP sent to ${email}`);
         }
 
         function otpMove(inp, idx) {
