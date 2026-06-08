@@ -1,827 +1,918 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SportAuth — Login & Registration</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Collow Tawer</title>
 
-    <!-- Google Sign-In -->
-    <meta name="google-signin-client_id" content="325617352352-35cb8fe0pnb23otuk389g5ojflro5cau.apps.googleusercontent.com">
+    <!-- ==================== GOOGLE SIGN-IN ==================== -->
+    <meta name="google-signin-client_id" content="325617352352-35cb8fe0pnb23otuk389g5ojflro5cau.apps.googleusercontent.com" />
     <script src="https://apis.google.com/js/platform.js" async defer></script>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
     <style>
-        * {
+        /* ======= RESET & BASE ======= */
+        *,
+        *::before,
+        *::after {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        html {
+            scroll-behavior: smooth;
         }
 
         body {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #0a0a0f;
-            position: relative;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        /* ======= BACKGROUND ZOOM (smooth infinite) ======= */
+        #bg-zoom {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
             overflow: hidden;
         }
 
-        /* ===== BACKGROUND IMAGE (Nike Shoe Ad) ===== */
-        .bg-image {
+        #bg-zoom img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            animation: smoothZoom 12s ease-in-out infinite alternate;
+            will-change: transform;
+        }
+
+        @keyframes smoothZoom {
+            0% {
+                transform: scale(1);
+            }
+            100% {
+                transform: scale(1.15);
+            }
+        }
+
+        /* ======= OVERLAY ======= */
+        #overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
             z-index: 0;
-            background: url('https://i.ibb.co/rGqyzm0k/d60c40198cc9e9f1d976f964ae640e7f-webp.webp') center center / cover no-repeat;
-            filter: brightness(0.5) saturate(0.8);
-            transform: scale(1.05);
-            animation: slowZoom 20s ease-in-out infinite alternate;
-        }
-
-        @keyframes slowZoom {
-            from { transform: scale(1.05); }
-            to { transform: scale(1.15); }
-        }
-
-        /* Dark overlay for readability */
-        .bg-overlay {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: linear-gradient(135deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.7) 100%);
-            z-index: 1;
-        }
-
-        /* ===== SPORT DECORATIVE ELEMENTS ===== */
-        .sport-accent {
-            position: fixed;
-            z-index: 1;
+            background: rgba(0, 0, 0, 0.55);
             pointer-events: none;
         }
 
-        .accent-line-1 {
+        /* ======= NAV ======= */
+        nav {
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            height: 4px;
-            background: linear-gradient(90deg, transparent, #6c63ff, #4834d4, #6c63ff, transparent);
-            animation: accentPulse 3s ease-in-out infinite;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background: rgba(10, 10, 10, 0.7);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            transition: background 0.3s;
         }
 
-        .accent-line-2 {
+        nav .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            background: linear-gradient(135deg, #f5af19, #f12711);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        nav ul li a {
+            color: #ddd;
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: 500;
+            padding: 8px 0;
+            position: relative;
+            transition: color 0.3s;
+        }
+
+        nav ul li a::after {
+            content: '';
+            position: absolute;
             bottom: 0;
             left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(135deg, #f5af19, #f12711);
+            transition: width 0.3s ease;
+        }
+
+        nav ul li a:hover {
+            color: #fff;
+        }
+        nav ul li a:hover::after {
             width: 100%;
-            height: 4px;
-            background: linear-gradient(90deg, transparent, #6c63ff, #4834d4, #6c63ff, transparent);
-            animation: accentPulse 3s ease-in-out infinite reverse;
         }
 
-        @keyframes accentPulse {
-            0%, 100% { opacity: 0.4; }
-            50% { opacity: 1; }
+        /* ======= AUTH BUTTONS ======= */
+        .auth-buttons {
+            display: flex;
+            gap: 12px;
+            align-items: center;
         }
 
-        /* Speed lines */
-        .speed-lines {
+        .auth-buttons button {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-login {
+            background: transparent;
+            color: #fff;
+            border: 2px solid #f5af19 !important;
+        }
+
+        .btn-login:hover {
+            background: #f5af19;
+            color: #0a0a0a;
+            transform: scale(1.05);
+        }
+
+        .btn-register {
+            background: linear-gradient(135deg, #f5af19, #f12711);
+            color: #fff;
+        }
+
+        .btn-register:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px rgba(241, 39, 17, 0.4);
+        }
+
+        /* ======= HERO ======= */
+        .hero {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 120px 20px 60px;
+            animation: fadeSlideUp 1.2s ease forwards;
+        }
+
+        .hero h1 {
+            font-size: 4.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #f5af19, #f12711);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+            letter-spacing: 3px;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            color: #ccc;
+            max-width: 700px;
+            margin-bottom: 40px;
+            line-height: 1.7;
+        }
+
+        .hero .cta-btn {
+            padding: 16px 48px;
+            border: none;
+            border-radius: 50px;
+            background: linear-gradient(135deg, #f5af19, #f12711);
+            color: #fff;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .hero .cta-btn:hover {
+            transform: scale(1.06);
+            box-shadow: 0 0 40px rgba(241, 39, 17, 0.5);
+        }
+
+        /* ======= GALLERY ======= */
+        .section {
+            position: relative;
+            z-index: 1;
+            padding: 100px 40px;
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-size: 2.8rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 60px;
+            letter-spacing: 2px;
+        }
+
+        .section-title span {
+            background: linear-gradient(135deg, #f5af19, #f12711);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .gallery-item {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            opacity: 0;
+            transform: translateY(40px);
+            animation: fadeSlideUp 0.8s ease forwards;
+        }
+
+        .gallery-item:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+        .gallery-item:nth-child(2) {
+            animation-delay: 0.25s;
+        }
+        .gallery-item:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        .gallery-item:nth-child(4) {
+            animation-delay: 0.55s;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.7s ease;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.12);
+        }
+
+        .gallery-item .info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 20px;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.85));
+            transform: translateY(100%);
+            transition: transform 0.4s ease;
+        }
+
+        .gallery-item:hover .info {
+            transform: translateY(0);
+        }
+
+        .gallery-item .info h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .gallery-item .info p {
+            font-size: 0.9rem;
+            color: #ccc;
+        }
+
+        /* ======= ABOUT ======= */
+        .about-content {
+            display: flex;
+            gap: 60px;
+            align-items: center;
+            flex-wrap: wrap;
+            opacity: 0;
+            transform: translateY(40px);
+            animation: fadeSlideUp 0.8s ease forwards;
+            animation-delay: 0.2s;
+        }
+
+        .about-text {
+            flex: 1;
+            min-width: 280px;
+        }
+
+        .about-text h3 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #f5af19;
+        }
+
+        .about-text p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #bbb;
+            margin-bottom: 20px;
+        }
+
+        .about-image {
+            flex: 1;
+            min-width: 280px;
+            border-radius: 16px;
+            overflow: hidden;
+            transition: transform 0.5s ease;
+        }
+
+        .about-image:hover {
+            transform: scale(1.03);
+        }
+
+        .about-image img {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            display: block;
+            border-radius: 16px;
+        }
+
+        /* ======= CONTACT ======= */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            opacity: 0;
+            transform: translateY(40px);
+            animation: fadeSlideUp 0.8s ease forwards;
+            animation-delay: 0.3s;
+        }
+
+        .contact-info h3 {
+            font-size: 1.6rem;
+            margin-bottom: 20px;
+            color: #f5af19;
+        }
+
+        .contact-info p {
+            font-size: 1.05rem;
+            color: #bbb;
+            line-height: 1.8;
+            margin-bottom: 12px;
+        }
+
+        .contact-info .label {
+            color: #f5af19;
+            font-weight: 600;
+        }
+
+        .contact-form {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .contact-form input,
+        .contact-form textarea {
+            padding: 16px 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.06);
+            color: #fff;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .contact-form input:focus,
+        .contact-form textarea:focus {
+            border-color: #f5af19;
+            box-shadow: 0 0 15px rgba(245, 175, 25, 0.15);
+        }
+
+        .contact-form textarea {
+            height: 140px;
+            resize: vertical;
+        }
+
+        .contact-form button {
+            padding: 16px 32px;
+            border: none;
+            border-radius: 50px;
+            background: linear-gradient(135deg, #f5af19, #f12711);
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            align-self: flex-start;
+        }
+
+        .contact-form button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(241, 39, 17, 0.4);
+        }
+
+        /* ======= MODAL (Login / Register) ======= */
+        .modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 1;
-            pointer-events: none;
-            overflow: hidden;
-        }
-
-        .speed-line {
-            position: absolute;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(108, 99, 255, 0.08), transparent);
-            width: 100%;
-            animation: speedLineMove 8s linear infinite;
-        }
-
-        .speed-line:nth-child(1) { top: 15%; animation-delay: 0s; }
-        .speed-line:nth-child(2) { top: 35%; animation-delay: -2s; }
-        .speed-line:nth-child(3) { top: 55%; animation-delay: -4s; }
-        .speed-line:nth-child(4) { top: 75%; animation-delay: -6s; }
-
-        @keyframes speedLineMove {
-            0% { transform: translateX(-100%); opacity: 0; }
-            50% { opacity: 1; }
-            100% { transform: translateX(100%); opacity: 0; }
-        }
-
-        /* Floating shoe silhouette */
-        .shoe-silhouette {
-            position: fixed;
-            right: -80px;
-            bottom: -40px;
-            z-index: 1;
-            pointer-events: none;
-            font-size: 300px;
-            color: rgba(108, 99, 255, 0.04);
-            transform: rotate(-20deg);
-        }
-
-        /* ===== MAIN CONTAINER ===== */
-        .main-container {
-            position: relative;
-            z-index: 10;
-            display: flex;
-            width: 1000px;
-            max-width: 95vw;
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(40px);
-            -webkit-backdrop-filter: blur(40px);
-            border-radius: 32px;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6);
-            overflow: hidden;
-        }
-
-        /* ===== LEFT BRAND PANEL ===== */
-        .left-panel {
-            flex: 1;
-            padding: 60px 45px;
-            display: flex;
-            flex-direction: column;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 2000;
+            display: none;
             justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: #1a1a1a;
+            border-radius: 20px;
+            padding: 50px 40px 40px;
+            max-width: 420px;
+            width: 90%;
             position: relative;
-            min-height: 560px;
-            background: linear-gradient(135deg, rgba(108, 99, 255, 0.03), transparent);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            animation: modalPop 0.4s ease;
         }
 
-        .brand-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 6px 16px;
-            border-radius: 50px;
-            border: 1px solid rgba(108, 99, 255, 0.2);
-            background: rgba(108, 99, 255, 0.08);
-            color: #6c63ff;
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            margin-bottom: 30px;
-            width: fit-content;
-        }
-
-        .brand-badge i {
-            font-size: 14px;
-        }
-
-        .brand h1 {
-            color: #fff;
-            font-size: 42px;
-            font-weight: 800;
-            letter-spacing: -1.5px;
-            line-height: 1.1;
-            margin-bottom: 6px;
-        }
-
-        .brand h1 span {
-            background: linear-gradient(135deg, #6c63ff, #a78bfa);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .brand .tagline {
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 16px;
-            font-weight: 300;
-            margin-bottom: 40px;
-        }
-
-        /* Stat cards */
-        .stats {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            max-width: 320px;
-        }
-
-        .stat-card {
-            padding: 16px 18px;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 14px;
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            transition: all 0.3s;
-        }
-
-        .stat-card:hover {
-            background: rgba(108, 99, 255, 0.06);
-            border-color: rgba(108, 99, 255, 0.15);
-        }
-
-        .stat-card .num {
-            color: #fff;
-            font-size: 22px;
-            font-weight: 700;
-        }
-
-        .stat-card .label {
-            color: rgba(255, 255, 255, 0.3);
-            font-size: 12px;
-            margin-top: 2px;
-        }
-
-        /* ===== RIGHT FORM PANEL ===== */
-        .right-panel {
-            width: 460px;
-            padding: 50px 45px;
-            background: rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(50px);
-            -webkit-backdrop-filter: blur(50px);
-            border-left: 1px solid rgba(255, 255, 255, 0.04);
-        }
-
-        .right-panel h2 {
-            color: #fff;
-            font-size: 22px;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-
-        .right-panel .subtitle {
-            color: rgba(255, 255, 255, 0.35);
-            font-size: 14px;
-            margin-bottom: 25px;
-        }
-
-        /* Tabs */
-        .tab-bar {
-            display: flex;
-            gap: 4px;
-            margin-bottom: 25px;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 14px;
-            padding: 4px;
-            border: 1px solid rgba(255, 255, 255, 0.04);
-        }
-
-        .tab-bar button {
-            flex: 1;
-            padding: 10px 16px;
-            border: none;
-            background: transparent;
-            color: rgba(255, 255, 255, 0.3);
-            font-size: 13px;
-            font-weight: 600;
+        .modal .close-btn {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            font-size: 1.8rem;
+            color: #888;
             cursor: pointer;
-            border-radius: 10px;
-            transition: all 0.4s;
-        }
-
-        .tab-bar button.active {
-            background: linear-gradient(135deg, #6c63ff, #4834d4);
-            color: #fff;
-            box-shadow: 0 4px 20px rgba(108, 99, 255, 0.25);
-        }
-
-        .tab-bar button:hover:not(.active) {
-            color: rgba(255, 255, 255, 0.6);
-        }
-
-        .form-panel { display: none; animation: fadeIn 0.4s ease; }
-        .form-panel.active { display: block; }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .form-group {
-            margin-bottom: 16px;
-        }
-
-        .form-group label {
-            display: block;
-            color: rgba(255, 255, 255, 0.4);
-            font-size: 11px;
-            margin-bottom: 6px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .input-wrap {
-            display: flex;
-            align-items: center;
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 12px;
-            padding: 0 14px;
-            transition: all 0.3s;
-        }
-
-        .input-wrap:focus-within {
-            border-color: rgba(108, 99, 255, 0.4);
-            box-shadow: 0 0 25px rgba(108, 99, 255, 0.08);
-            background: rgba(108, 99, 255, 0.04);
-        }
-
-        .input-wrap i {
-            color: rgba(255, 255, 255, 0.15);
-            font-size: 14px;
-            width: 18px;
-        }
-
-        .input-wrap input {
-            width: 100%;
-            padding: 13px 10px;
-            border: none;
-            background: transparent;
-            color: #fff;
-            font-size: 14px;
-            outline: none;
-        }
-
-        .input-wrap input::placeholder {
-            color: rgba(255, 255, 255, 0.12);
-        }
-
-        .password-field .toggle-pass {
+            transition: color 0.3s;
             background: none;
             border: none;
-            color: rgba(255, 255, 255, 0.2);
-            cursor: pointer;
-            font-size: 14px;
-            padding: 0 4px;
-            transition: color 0.3s;
         }
 
-        .password-field .toggle-pass:hover {
-            color: rgba(255, 255, 255, 0.5);
-        }
-
-        .form-options {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            font-size: 13px;
-        }
-
-        .form-options label {
-            color: rgba(255, 255, 255, 0.35);
-            display: flex;
-            align-items: center;
-            gap: 7px;
-            cursor: pointer;
-        }
-
-        .form-options label input { accent-color: #6c63ff; }
-
-        .form-options a {
-            color: #6c63ff;
-            text-decoration: none;
-            cursor: pointer;
-            font-size: 13px;
-            transition: all 0.3s;
-        }
-
-        .form-options a:hover {
-            text-shadow: 0 0 20px rgba(108, 99, 255, 0.4);
-        }
-
-        .btn-primary {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #6c63ff, #4834d4);
+        .modal .close-btn:hover {
             color: #fff;
-            border: none;
-            border-radius: 12px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.4s;
-            position: relative;
-            overflow: hidden;
         }
 
-        .btn-primary::before {
+        .modal h2 {
+            font-size: 2rem;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .modal .sub {
+            text-align: center;
+            color: #999;
+            margin-bottom: 28px;
+            font-size: 0.95rem;
+        }
+
+        .modal .g-signin2 {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .modal .divider {
+            text-align: center;
+            color: #555;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .modal .divider::before,
+        .modal .divider::after {
             content: '';
             position: absolute;
-            top: 0; left: -100%;
-            width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
-            transition: left 0.6s;
-        }
-
-        .btn-primary:hover::before { left: 100%; }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 35px rgba(108, 99, 255, 0.35);
-        }
-
-        .btn-primary:active { transform: translateY(0); }
-
-        .divider {
-            display: flex;
-            align-items: center;
-            margin: 20px 0;
-            color: rgba(255, 255, 255, 0.12);
-            font-size: 12px;
-        }
-
-        .divider::before, .divider::after {
-            content: '';
-            flex: 1;
+            top: 50%;
+            width: 40%;
             height: 1px;
-            background: rgba(255, 255, 255, 0.04);
+            background: #333;
         }
 
-        .divider span { padding: 0 15px; }
+        .modal .divider::before {
+            left: 0;
+        }
+        .modal .divider::after {
+            right: 0;
+        }
 
-        .g-signin2 {
+        .modal form {
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            gap: 16px;
         }
 
-        /* ===== OTP ===== */
-        .otp-inputs {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin: 20px 0;
-        }
-
-        .otp-inputs input {
-            width: 48px;
-            height: 54px;
-            text-align: center;
-            font-size: 22px;
-            font-weight: 700;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.04);
+        .modal form input {
+            padding: 14px 18px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.05);
             color: #fff;
+            font-size: 1rem;
             outline: none;
+            transition: border 0.3s;
+        }
+
+        .modal form input:focus {
+            border-color: #f5af19;
+        }
+
+        .modal form button[type="submit"] {
+            padding: 14px;
+            border: none;
+            border-radius: 50px;
+            background: linear-gradient(135deg, #f5af19, #f12711);
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
             transition: all 0.3s;
         }
 
-        .otp-inputs input:focus {
-            border-color: #6c63ff;
-            box-shadow: 0 0 25px rgba(108, 99, 255, 0.15);
+        .modal form button[type="submit"]:hover {
+            transform: scale(1.03);
+            box-shadow: 0 0 25px rgba(241, 39, 17, 0.3);
         }
 
-        .hidden { display: none !important; }
-
-        .info-text {
-            color: rgba(255, 255, 255, 0.4);
-            font-size: 13px;
+        .modal .toggle-auth {
             text-align: center;
-            margin-bottom: 12px;
+            margin-top: 18px;
+            color: #888;
+            font-size: 0.9rem;
         }
 
-        .resend-otp {
-            text-align: center;
-            margin-top: 14px;
-            font-size: 13px;
-            color: rgba(255, 255, 255, 0.3);
-        }
-
-        .resend-otp a {
-            color: #6c63ff;
+        .modal .toggle-auth a {
+            color: #f5af19;
             cursor: pointer;
             text-decoration: none;
+            font-weight: 600;
         }
 
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 900px) {
-            .main-container {
-                flex-direction: column;
-                max-width: 480px;
+        .modal .toggle-auth a:hover {
+            text-decoration: underline;
+        }
+
+        /* ======= FOOTER ======= */
+        footer {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 40px 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        /* ======= ANIMATIONS ======= */
+        @keyframes fadeSlideUp {
+            0% {
+                opacity: 0;
+                transform: translateY(40px);
             }
-            .left-panel {
-                padding: 40px 30px;
-                min-height: auto;
+            100% {
+                opacity: 1;
+                transform: translateY(0);
             }
-            .right-panel {
-                width: 100%;
-                padding: 35px 30px;
-                border-left: none;
-                border-top: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
             }
-            .brand h1 { font-size: 32px; }
-            .shoe-silhouette { display: none; }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes modalPop {
+            0% {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* ======= RESPONSIVE ======= */
+        @media (max-width: 768px) {
+            nav {
+                padding: 14px 20px;
+                flex-wrap: wrap;
+                gap: 12px;
+            }
+            nav ul {
+                gap: 14px;
+                flex-wrap: wrap;
+            }
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            .hero p {
+                font-size: 1rem;
+            }
+            .section {
+                padding: 60px 20px;
+            }
+            .section-title {
+                font-size: 2rem;
+            }
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+            .about-content {
+                flex-direction: column-reverse;
+            }
+            .gallery-item img {
+                height: 280px;
+            }
         }
 
         @media (max-width: 480px) {
-            .right-panel { padding: 25px 20px; }
-            .left-panel { padding: 30px 20px; }
-            .stats { grid-template-columns: 1fr 1fr; gap: 8px; }
-            .otp-inputs input { width: 40px; height: 46px; font-size: 18px; }
+            .auth-buttons button {
+                padding: 8px 16px;
+                font-size: 0.8rem;
+            }
+            nav .logo {
+                font-size: 1.3rem;
+            }
+            .hero h1 {
+                font-size: 1.8rem;
+            }
         }
     </style>
 </head>
+
 <body>
 
-    <!-- Background Image -->
-    <div class="bg-image"></div>
-    <div class="bg-overlay"></div>
-
-    <!-- Sport Accents -->
-    <div class="sport-accent accent-line-1"></div>
-    <div class="sport-accent accent-line-2"></div>
-    
-    <div class="speed-lines">
-        <div class="speed-line"></div>
-        <div class="speed-line"></div>
-        <div class="speed-line"></div>
-        <div class="speed-line"></div>
+    <!-- ===== BACKGROUND ZOOM ===== -->
+    <div id="bg-zoom">
+        <img src="https://i.ibb.co/jkYHHMRz/69bccb5ffb9f3a98e33ac7668dab5f9e.jpg" alt="Collow Tawer Background" />
     </div>
+    <div id="overlay"></div>
 
-    <div class="shoe-silhouette"><i class="fas fa-running"></i></div>
+    <!-- ===== NAVIGATION ===== -->
+    <nav>
+        <div class="logo">✨ Collow Tawer</div>
+        <ul>
+            <li><a href="#home">Home</a></li>
+            <li><a href="#gallery">Gallery</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#contact">Contact</a></li>
+            <li class="auth-buttons">
+                <button class="btn-login" id="loginBtn">Login</button>
+                <button class="btn-register" id="registerBtn">Register</button>
+            </li>
+        </ul>
+    </nav>
 
-    <!-- ===== MAIN CONTAINER ===== -->
-    <div class="main-container">
+    <!-- ===== HERO / HOME ===== -->
+    <section class="hero" id="home">
+        <h1>Collow Tawer</h1>
+        <p>Where elegance meets the horizon. Experience breathtaking views, timeless architecture, and unrivaled luxury — all in one iconic destination.</p>
+        <a href="#gallery" class="cta-btn">Explore Gallery</a>
+    </section>
 
-        <!-- LEFT PANEL -->
-        <div class="left-panel">
-            <div class="brand-badge">
-                <i class="fas fa-bolt"></i> New Generation
+    <!-- ===== GALLERY ===== -->
+    <section class="section" id="gallery">
+        <h2 class="section-title"><span>Our</span> Gallery</h2>
+        <div class="gallery-grid">
+            <div class="gallery-item">
+                <img src="https://i.ibb.co/zh4Dvg0W/ab3d5ee399aaacace2fc55fd3f21e331.jpg" alt="Collow Tawer View 1" />
+                <div class="info"><h3>Sunset Vista</h3><p>Golden hour from the tower</p></div>
             </div>
-            <div class="brand">
-                <h1>SPORT<br><span>AUTH</span></h1>
-                <p class="tagline">Performance meets security</p>
+            <div class="gallery-item">
+                <img src="https://i.ibb.co/Rk3cx9M8/eb4c170f9fcb07b7e0b2ec541ed5baa8.jpg" alt="Collow Tawer View 2" />
+                <div class="info"><h3>City Lights</h3><p>The skyline at dusk</p></div>
             </div>
-            <div class="stats">
-                <div class="stat-card">
-                    <div class="num">10K+</div>
-                    <div class="label">Active Users</div>
-                </div>
-                <div class="stat-card">
-                    <div class="num">99.9%</div>
-                    <div class="label">Uptime</div>
-                </div>
-                <div class="stat-card">
-                    <div class="num">150+</div>
-                    <div class="label">Countries</div>
-                </div>
-                <div class="stat-card">
-                    <div class="num">4.9★</div>
-                    <div class="label">User Rating</div>
-                </div>
+            <div class="gallery-item">
+                <img src="https://i.ibb.co/1GBHBC8t/0083cf2461205e558d89d3a3cf877ab3-webp.webp" alt="Collow Tawer View 3" />
+                <div class="info"><h3>Modern Design</h3><p>Architecture of the future</p></div>
+            </div>
+            <div class="gallery-item">
+                <img src="https://i.ibb.co/fV66g030/f3e31bfbdb7a6da6fdd2eccc52da5339.jpg" alt="Collow Tawer View 4" />
+                <div class="info"><h3>Night Skyline</h3><p>Stars above the tower</p></div>
             </div>
         </div>
+    </section>
 
-        <!-- RIGHT PANEL -->
-        <div class="right-panel">
-            <h2>Welcome</h2>
-            <p class="subtitle">Sign in or create your sport account</p>
-
-            <div class="tab-bar">
-                <button class="active" onclick="switchTab('login')">Sign In</button>
-                <button onclick="switchTab('register')">Register</button>
-                <button onclick="switchTab('forgot')">Forgot</button>
+    <!-- ===== ABOUT ===== -->
+    <section class="section" id="about">
+        <h2 class="section-title"><span>About</span> Collow Tawer</h2>
+        <div class="about-content">
+            <div class="about-text">
+                <h3>Iconic. Modern. Unforgettable.</h3>
+                <p>Collow Tawer stands as a beacon of modern architectural brilliance. Rising 350 meters above the city, it offers panoramic views that stretch to the horizon. Designed by world-renowned architects, every corner of the tower tells a story of innovation and elegance.</p>
+                <p>Whether you're visiting for business, leisure, or inspiration — Collow Tawer is a destination that transforms every moment into a memory. Join the millions who have experienced the view from the top.</p>
             </div>
-
-            <!-- LOGIN -->
-            <div id="form-login" class="form-panel active">
-                <div class="form-group">
-                    <label>Email</label>
-                    <div class="input-wrap">
-                        <i class="fas fa-envelope"></i>
-                        <input type="email" id="login-email" placeholder="you@example.com">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Password</label>
-                    <div class="input-wrap password-field">
-                        <i class="fas fa-lock"></i>
-                        <input type="password" id="login-pass" placeholder="Enter password">
-                        <button class="toggle-pass" onclick="togglePass('login-pass',this)"><i class="fas fa-eye"></i></button>
-                    </div>
-                </div>
-                <div class="form-options">
-                    <label><input type="checkbox" checked> Remember me</label>
-                    <a onclick="switchTab('forgot')">Forgot?</a>
-                </div>
-                <button class="btn-primary" onclick="handleLogin()">Sign In</button>
-                <div class="divider"><span>OR</span></div>
-                <div class="g-signin2" data-onsuccess="onGoogleSignIn" data-theme="dark"></div>
+            <div class="about-image">
+                <img src="https://i.ibb.co/jkYHHMRz/69bccb5ffb9f3a98e33ac7668dab5f9e.jpg" alt="About Collow Tawer" />
             </div>
+        </div>
+    </section>
 
-            <!-- REGISTER -->
-            <div id="form-register" class="form-panel">
-                <div class="form-group">
-                    <label>Full Name</label>
-                    <div class="input-wrap">
-                        <i class="fas fa-user"></i>
-                        <input type="text" id="reg-name" placeholder="John Doe">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Email</label>
-                    <div class="input-wrap">
-                        <i class="fas fa-envelope"></i>
-                        <input type="email" id="reg-email" placeholder="you@example.com">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Password</label>
-                    <div class="input-wrap password-field">
-                        <i class="fas fa-lock"></i>
-                        <input type="password" id="reg-pass" placeholder="Create password">
-                        <button class="toggle-pass" onclick="togglePass('reg-pass',this)"><i class="fas fa-eye"></i></button>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Confirm</label>
-                    <div class="input-wrap password-field">
-                        <i class="fas fa-lock"></i>
-                        <input type="password" id="reg-confirm" placeholder="Confirm password">
-                        <button class="toggle-pass" onclick="togglePass('reg-confirm',this)"><i class="fas fa-eye"></i></button>
-                    </div>
-                </div>
-                <div class="form-options">
-                    <label><input type="checkbox" id="reg-terms"> I agree to the <a href="#">Terms</a></label>
-                </div>
-                <button class="btn-primary" onclick="handleRegister()">Create Account</button>
-                <div class="divider"><span>OR</span></div>
-                <div class="g-signin2" data-onsuccess="onGoogleSignIn" data-theme="dark"></div>
+    <!-- ===== CONTACT ===== -->
+    <section class="section" id="contact">
+        <h2 class="section-title"><span>Get in</span> Touch</h2>
+        <div class="contact-grid">
+            <div class="contact-info">
+                <h3>Contact Information</h3>
+                <p><span class="label">📍 Address:</span> 1 Collow Tower Boulevard, Skyline District</p>
+                <p><span class="label">📞 Phone:</span> +1 (555) 123-4567</p>
+                <p><span class="label">✉️ Email:</span> hello@collowtawer.com</p>
+                <p><span class="label">🕐 Hours:</span> Daily 9:00 AM – 11:00 PM</p>
+                <p style="margin-top:20px;">Our team is available 24/7 for inquiries. Reach out and we'll get back to you within the hour.</p>
             </div>
+            <form class="contact-form" onsubmit="event.preventDefault(); alert('Thank you! Your message has been sent to Collow Tawer.');">
+                <input type="text" placeholder="Your Name" required />
+                <input type="email" placeholder="Your Email" required />
+                <input type="text" placeholder="Subject" />
+                <textarea placeholder="Your Message..." required></textarea>
+                <button type="submit">Send Message</button>
+            </form>
+        </div>
+    </section>
 
-            <!-- FORGOT / OTP -->
-            <div id="form-forgot" class="form-panel">
-                <div id="forgot-step-1">
-                    <div class="form-group">
-                        <label>Email</label>
-                        <div class="input-wrap">
-                            <i class="fas fa-envelope"></i>
-                            <input type="email" id="forgot-email" placeholder="Registered email">
-                        </div>
-                    </div>
-                    <button class="btn-primary" onclick="sendOtp()">Send OTP</button>
-                </div>
-                <div id="forgot-step-2" class="hidden">
-                    <p class="info-text">Enter the 6-digit code sent to your email</p>
-                    <div class="otp-inputs">
-                        <input type="text" maxlength="1" oninput="otpMove(this,0)" onkeydown="otpBack(this,0)">
-                        <input type="text" maxlength="1" oninput="otpMove(this,1)" onkeydown="otpBack(this,1)">
-                        <input type="text" maxlength="1" oninput="otpMove(this,2)" onkeydown="otpBack(this,2)">
-                        <input type="text" maxlength="1" oninput="otpMove(this,3)" onkeydown="otpBack(this,3)">
-                        <input type="text" maxlength="1" oninput="otpMove(this,4)" onkeydown="otpBack(this,4)">
-                        <input type="text" maxlength="1" oninput="otpMove(this,5)" onkeydown="otpBack(this,5)">
-                    </div>
-                    <button class="btn-primary" onclick="verifyOtp()">Verify</button>
-                    <div class="resend-otp">Didn't receive? <a onclick="sendOtp()">Resend</a></div>
-                </div>
-                <div id="forgot-step-3" class="hidden">
-                    <div class="form-group">
-                        <label>New Password</label>
-                        <div class="input-wrap password-field">
-                            <i class="fas fa-lock"></i>
-                            <input type="password" id="reset-pass" placeholder="New password">
-                            <button class="toggle-pass" onclick="togglePass('reset-pass',this)"><i class="fas fa-eye"></i></button>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Confirm</label>
-                        <div class="input-wrap password-field">
-                            <i class="fas fa-lock"></i>
-                            <input type="password" id="reset-confirm" placeholder="Confirm password">
-                            <button class="toggle-pass" onclick="togglePass('reset-confirm',this)"><i class="fas fa-eye"></i></button>
-                        </div>
-                    </div>
-                    <button class="btn-primary" onclick="handleReset()">Reset Password</button>
-                </div>
+    <!-- ===== FOOTER ===== -->
+    <footer>
+        &copy; 2026 Collow Tawer. All rights reserved. | Built with passion.
+    </footer>
+
+    <!-- ==================== LOGIN / REGISTER MODAL ==================== -->
+    <div class="modal-overlay" id="authModal">
+        <div class="modal">
+            <button class="close-btn" id="modalClose">&times;</button>
+            <div id="modalContent">
+                <!-- Dynamically injected by JS -->
             </div>
         </div>
     </div>
 
+    <!-- ==================== JAVASCRIPT ==================== -->
     <script>
-        // ===== TAB SWITCHING =====
-        function switchTab(tab) {
-            document.querySelectorAll('.tab-bar button').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.form-panel').forEach(p => p.classList.remove('active'));
+        // ---- Modal Controls ----
+        const modalOverlay = document.getElementById('authModal');
+        const modalContent = document.getElementById('modalContent');
+        const loginBtn = document.getElementById('loginBtn');
+        const registerBtn = document.getElementById('registerBtn');
+        const closeBtn = document.getElementById('modalClose');
 
-            const tabMap = { login: 0, register: 1, forgot: 2 };
-            document.querySelectorAll('.tab-bar button')[tabMap[tab]].classList.add('active');
-            document.getElementById('form-' + tab).classList.add('active');
-            
-            if (tab !== 'forgot') resetForgot();
+        function openModal() {
+            modalOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
         }
 
-        function resetForgot() {
-            document.getElementById('forgot-step-1').classList.remove('hidden');
-            document.getElementById('forgot-step-2').classList.add('hidden');
-            document.getElementById('forgot-step-3').classList.add('hidden');
+        function closeModal() {
+            modalOverlay.classList.remove('active');
+            document.body.style.overflow = '';
         }
 
-        // ===== PASSWORD TOGGLE =====
-        function togglePass(id, btn) {
-            const inp = document.getElementById(id);
-            if (inp.type === 'password') {
-                inp.type = 'text';
-                btn.innerHTML = '<i class="fas fa-eye-slash"></i>';
-            } else {
-                inp.type = 'password';
-                btn.innerHTML = '<i class="fas fa-eye"></i>';
+        closeBtn.addEventListener('click', closeModal);
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) closeModal();
+        });
+
+        // ---- Login Form ----
+        function showLogin() {
+            modalContent.innerHTML = `
+                <h2>Welcome Back</h2>
+                <p class="sub">Sign in to your Collow Tawer account</p>
+
+                <div class="g-signin2" data-onsuccess="onGoogleSignIn" data-theme="dark"></div>
+
+                <div class="divider">or sign in with email</div>
+
+                <form onsubmit="event.preventDefault(); alert('Login successful! Welcome back to Collow Tawer.'); closeModal();">
+                    <input type="email" placeholder="Email address" required />
+                    <input type="password" placeholder="Password" required />
+                    <button type="submit">Sign In</button>
+                </form>
+
+                <p class="toggle-auth">Don't have an account? <a onclick="showRegister()">Register here</a></p>
+            `;
+            // Re-render Google button
+            if (window.gapi && gapi.signin2) {
+                gapi.signin2.render('google-signin-btn', {
+                    'scope': 'profile email',
+                    'width': 300,
+                    'height': 50,
+                    'longtitle': true,
+                    'theme': 'dark',
+                    'onsuccess': onGoogleSignIn,
+                });
             }
         }
 
-        // ===== LOGIN =====
-        function handleLogin() {
-            const email = document.getElementById('login-email').value;
-            const pass = document.getElementById('login-pass').value;
-            if (!email || !pass) return alert('Please fill all fields.');
-            alert(`Welcome back, ${email}!`);
+        // ---- Register Form ----
+        function showRegister() {
+            modalContent.innerHTML = `
+                <h2>Create Account</h2>
+                <p class="sub">Join the Collow Tawer community</p>
+
+                <div class="g-signin2" data-onsuccess="onGoogleSignIn" data-theme="dark"></div>
+
+                <div class="divider">or register with email</div>
+
+                <form onsubmit="event.preventDefault(); alert('Registration successful! Welcome to Collow Tawer.'); closeModal();">
+                    <input type="text" placeholder="Full Name" required />
+                    <input type="email" placeholder="Email address" required />
+                    <input type="password" placeholder="Password" required />
+                    <input type="password" placeholder="Confirm Password" required />
+                    <button type="submit">Create Account</button>
+                </form>
+
+                <p class="toggle-auth">Already have an account? <a onclick="showLogin()">Sign in</a></p>
+            `;
         }
 
-        // ===== REGISTER =====
-        function handleRegister() {
-            const name = document.getElementById('reg-name').value;
-            const email = document.getElementById('reg-email').value;
-            const pass = document.getElementById('reg-pass').value;
-            const confirm = document.getElementById('reg-confirm').value;
-            const terms = document.getElementById('reg-terms').checked;
-            if (!name || !email || !pass || !confirm) return alert('Fill all fields.');
-            if (pass !== confirm) return alert('Passwords do not match.');
-            if (pass.length < 6) return alert('Password must be at least 6 characters.');
-            if (!terms) return alert('You must agree to the Terms.');
-            alert(`Account created for ${name}!`);
-        }
+        loginBtn.addEventListener('click', () => { showLogin();
+            openModal(); });
+        registerBtn.addEventListener('click', () => { showRegister();
+            openModal(); });
 
-        // ===== OTP =====
-        function sendOtp() {
-            const email = document.getElementById('forgot-email').value;
-            if (!email) return alert('Enter your email address.');
-            document.getElementById('forgot-step-1').classList.add('hidden');
-            document.getElementById('forgot-step-2').classList.remove('hidden');
-            const first = document.querySelector('#forgot-step-2 .otp-inputs input');
-            if (first) first.focus();
-            alert(`OTP sent to ${email}`);
-        }
-
-        function otpMove(inp, idx) {
-            if (inp.value.length === 1 && idx < 5) {
-                const next = inp.parentElement.children[idx + 1];
-                if (next) next.focus();
-            }
-            const all = document.querySelectorAll('#forgot-step-2 .otp-inputs input');
-            let filled = true;
-            all.forEach(i => { if (!i.value) filled = false; });
-            if (filled) verifyOtp();
-        }
-
-        function otpBack(inp, idx) {
-            if (event.key === 'Backspace' && !inp.value && idx > 0) {
-                const prev = inp.parentElement.children[idx - 1];
-                if (prev) prev.focus();
-            }
-        }
-
-        function verifyOtp() {
-            const inputs = document.querySelectorAll('#forgot-step-2 .otp-inputs input');
-            let otp = '';
-            inputs.forEach(i => otp += i.value);
-            if (otp.length !== 6) return alert('Enter the full 6-digit OTP.');
-            document.getElementById('forgot-step-2').classList.add('hidden');
-            document.getElementById('forgot-step-3').classList.remove('hidden');
-        }
-
-        function handleReset() {
-            const pass = document.getElementById('reset-pass').value;
-            const confirm = document.getElementById('reset-confirm').value;
-            if (!pass || !confirm) return alert('Fill all fields.');
-            if (pass !== confirm) return alert('Passwords do not match.');
-            if (pass.length < 6) return alert('Password too short.');
-            alert('Password reset successfully!');
-            switchTab('login');
-        }
-
-        // ===== GOOGLE SIGN-IN =====
+        // ---- Google Sign-In Handler ----
         function onGoogleSignIn(googleUser) {
             const profile = googleUser.getBasicProfile();
-            alert(`Google sign-in: ${profile.getName()} — ${profile.getEmail()}`);
+            const name = profile.getName();
+            const email = profile.getEmail();
+            alert(`Welcome to Collow Tawer, ${name}!\nSigned in as ${email}`);
+            closeModal();
         }
 
-        // ===== ENTER KEY SUPPORT =====
-        document.addEventListener('keydown', (e) => {
-            if (e.key !== 'Enter') return;
-            const active = document.querySelector('.form-panel.active');
-            if (!active) return;
-            if (active.id === 'form-login') handleLogin();
-            else if (active.id === 'form-register') handleRegister();
-            else if (active.id === 'form-forgot') {
-                if (!document.getElementById('forgot-step-1').classList.contains('hidden')) sendOtp();
-                else if (!document.getElementById('forgot-step-2').classList.contains('hidden')) verifyOtp();
-                else handleReset();
-            }
+        // ---- Intersection Observer for scroll-triggered transitions ----
+        const observerOptions = {
+            threshold: 0.15,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe all sections for re-trigger on scroll
+        document.querySelectorAll('.section, .hero').forEach((el) => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+            observer.observe(el);
         });
+
+        // Hero is visible on load anyway
+        window.addEventListener('load', () => {
+            document.querySelector('.hero').style.opacity = '1';
+            document.querySelector('.hero').style.transform = 'translateY(0)';
+        });
+
+        // ---- Smooth nav scroll highlight ----
+        document.querySelectorAll('nav a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        console.log('✨ Collow Tawer — Live & Elevated');
     </script>
 </body>
 </html>
